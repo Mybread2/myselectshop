@@ -1,5 +1,6 @@
 package com.sparta.myselectshop.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import com.sparta.myselectshop.dto.ProductMypriceRequestDto;
 import com.sparta.myselectshop.dto.ProductRequestDto;
 import com.sparta.myselectshop.dto.ProductResponseDto;
 import com.sparta.myselectshop.entity.Product;
+import com.sparta.myselectshop.naver.dto.ItemDto;
 import com.sparta.myselectshop.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -45,6 +47,20 @@ public class ProductService {
 
 	@Transactional(readOnly = true)
 	public List<ProductResponseDto> getProducts() {
-		return null;
+		List<Product> products = productRepository.findAll();
+		List<ProductResponseDto> productResponses = new ArrayList<>();
+
+		for (Product product : products) {
+			productResponses.add(new ProductResponseDto(product));
+		}
+		return productResponses;
+	}
+
+	@Transactional
+	public void updateBySearch(Long id, ItemDto itemDto) {
+		Product product = productRepository.findById(id).orElseThrow(() ->
+			new NullPointerException("해당 상품은 존재하지 않습니다.")
+		);
+		product.updateByItemDto(itemDto);
 	}
 }
